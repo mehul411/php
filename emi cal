@@ -1,0 +1,69 @@
+import 'package:flutter/material.dart';
+// import 'dart:math';
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatefulWidget
+{
+  const MyApp({super.key});
+  @override
+  UI createState() => UI();
+}
+
+class UI extends State<MyApp>
+{ // This wid
+  String productPrice = "";
+  String downPayment = "";
+  String noEmi = "";
+  String emiText = "";
+  double? emi;
+
+  @override
+  Widget build(BuildContext context) {
+    TextField t1 = TextField(onChanged: (value) {
+      setState(() {
+        productPrice = value;
+      });
+    },decoration:const InputDecoration(border:OutlineInputBorder(),hintText: "Product Price"), );
+
+    TextField t2 = TextField(onChanged: (value) {
+      setState(() {
+        downPayment = value;
+      });
+    },decoration:const InputDecoration(border:OutlineInputBorder(),hintText: "Down Payment"));
+
+    TextField t3 = TextField(onChanged: (value) {
+      setState(() {
+        noEmi = value;
+      });
+    },decoration:const InputDecoration(border:OutlineInputBorder(),hintText: "No. of EMIs"));
+
+
+
+
+
+    ElevatedButton btn = ElevatedButton(onPressed: ()
+    {
+      double p = double.parse(productPrice);
+      double d = double.parse(downPayment);
+      double n = double.parse(noEmi);
+      emi = (p-d)/n;
+      setState(() {
+        emiText = "EMI = Rs. : $emi";
+      });
+
+
+    }, child: const Text("Show EMI Amount"));
+
+    Text txt = Text(emiText);
+
+    AppBar ab = AppBar(title: const Text("EMI Calculator"),backgroundColor: Colors.blue);
+
+    Column c =Column(children: [const SizedBox(height: 50,),t1,const SizedBox(height: 30,),t2,const SizedBox(height: 30,),t3,const SizedBox(height: 15,),txt,const SizedBox(height: 15),btn]);
+    Container ct = Container(alignment: Alignment.center,child:c);
+    Scaffold sf = Scaffold(appBar:ab, body: ct);
+    MaterialApp m = MaterialApp(home:sf,debugShowCheckedModeBanner: false,);
+    return m;
+  }
+}
