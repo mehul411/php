@@ -1,0 +1,126 @@
+import 'package:flutter/material.dart';
+class AttendanceScreen extends StatefulWidget {
+  @override
+  _AttendanceScreenState createState() => _AttendanceScreenState();
+}
+class _AttendanceScreenState extends State<AttendanceScreen> {
+  DateTime _selectedDate = DateTime.now();
+  List<String> students = ['Student 1', 'Student 2', 'Student 3']; // Sample student list
+  List<bool> attendance = List<bool>.filled(3, false); // Initialize attendance list
+  @override
+  Widget build(BuildContext context) {
+
+
+    return Scaffold(
+
+      appBar: AppBar(
+        title: Text('Attendance'),
+      ),
+      body: Column(
+        children: [
+          Text('Select Date:'),
+          ElevatedButton(
+            onPressed: () {
+              // Open date picker
+              showDatePicker(
+                context: context,
+                initialDate: _selectedDate,
+                firstDate: DateTime(2000),
+                lastDate: DateTime(2100),
+              ).then((selectedDate) {
+                if (selectedDate != null) {
+                  setState(() {
+                    _selectedDate = selectedDate;
+                  });
+                }
+              });
+            },
+            child: Text('$_selectedDate'),
+          ),
+          Text('Mark Attendance:'),
+          Column(
+            children: students
+                .asMap()
+                .entries
+                .map((e) => CheckboxListTile(
+              title: Text(e.value),
+              value: attendance[e.key],
+              onChanged: (bool? value) {
+                setState(() {
+                  attendance[e.key] = value!;
+                });
+              },
+            ))
+                .toList(),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              // Submit attendance data and navigate to the second screen
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AttendanceSummaryScreen(
+                    selectedDate: _selectedDate,
+                    students: students,
+                    attendance: attendance,
+                  ),
+                ),
+              );
+            },
+            child: Text('Submit'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+class AttendanceSummaryScreen extends StatelessWidget {
+  final DateTime selectedDate;
+  final List<String> students;
+  final List<bool> attendance;
+  AttendanceSummaryScreen({
+    required this.selectedDate,
+    required this.students,
+    required this.attendance,
+  });
+  @override
+  Widget build(BuildContext context) {
+    // Calculate present and absent students
+    List<String> presentStudents = [];
+    List<String> absentStudents = [];
+    for (int i = 0; i < students.length; i++) {
+      if (attendance[i]) {
+        presentStudents.add(students[i]);
+      } else {
+        absentStudents.add(students[i]);
+      }
+    }
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Attendance Summary'),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Selected Date: $selectedDate'),
+          Text('Present Students (${presentStudents.length}):'),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: presentStudents.map((student) => Text(student)).toList(),
+          ),
+          Text('Absent Students (${absentStudents.length}):'),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: absentStudents.map((student) => Text(student)).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+}
+void main() {
+  runApp(MaterialApp(
+    home: AttendanceScreen(),
+    debugShowCheckedModeBanner: false,
+  ));
+}
